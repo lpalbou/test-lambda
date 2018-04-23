@@ -42,7 +42,7 @@ function GetJSON(url, transformCallback, resultCallback) {
           isBase64Encoded: false,
           statusCode: 200,
           headers: { 'content-type': 'application/json' },
-          body: JSON.parse(body).results.bindings
+          body: { result: JSON.parse(body).results.bindings }
         });
       }
     }
@@ -66,7 +66,7 @@ function transformUserList(json, resultCallback) {
     isBase64Encoded: false,
     statusCode: 200,
     headers: { 'content-type': 'application/json' },
-    body: jsmodified
+    body: { result: jsmodified }
   });
 
 }
