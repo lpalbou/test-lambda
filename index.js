@@ -41,13 +41,13 @@ function GetJSON(url, transformCallback, resultCallback) {
         resultCallback(null, {
           isBase64Encoded: false,
           statusCode: 200,
-          headers: { 'content-type': 'application/json' },
-          body: { result: JSON.parse(body).results.bindings }
+          body: JSON.stringify({ result: JSON.parse(body).results.bindings } )
         });
       }
     }
   });
 }
+//body: { result: JSON.parse(body).results.bindings }
 
 
 /* transform the user list json */
@@ -65,9 +65,9 @@ function transformUserList(json, resultCallback) {
   resultCallback(null, {
     isBase64Encoded: false,
     statusCode: 200,
-    headers: { 'content-type': 'application/json' },
-    body: { result: jsmodified }
+    body: JSON.stringify({ result: jsmodified })
   });
+//  headers: { 'content-type': 'application/json' },
 
 }
 
