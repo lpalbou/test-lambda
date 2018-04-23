@@ -6,6 +6,9 @@ var request = require("request");
 
 var baseUrl = "http://rdf.geneontology.org/blazegraph/sparql";
 
+
+var separator = "@!@";
+
 exports.get = function(event, context, callback) {
   var contents = fs.readFileSync(`public${path.sep}index.html`);
 
@@ -58,7 +61,12 @@ function transformUserList(json, resultCallback) {
       }
   });
 
-  resultCallback(null, jsmodified);
+  resultCallback(null, {
+    statusCode: 200,
+    body: jsmodified,
+    headers: {'content-type': 'application/json'}
+  });
+
 }
 
 
