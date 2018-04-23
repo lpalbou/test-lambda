@@ -9,7 +9,7 @@ var baseUrl = "http://rdf.geneontology.org/blazegraph/sparql";
 
 var separator = "@!@";
 
-exports.get = function(event, context, callback) {
+exports.get = function (event, context, callback) {
   var contents = fs.readFileSync(`public${path.sep}index.html`);
 
   var url = baseUrl + SPARQL_UserList();
@@ -23,28 +23,29 @@ exports.get = function(event, context, callback) {
 
 function GetJSON(url, transformCallback, resultCallback) {
   var options = {
-      uri: url,
-      method: 'POST',
-      headers: {
-          'Content-Type': 'application/sparql-results+json',
-          'Accept': 'application/json',
-      }
+    uri: url,
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/sparql-results+json',
+      'Accept': 'application/json',
+    }
   };
 
   request(options, function (error, response, body) {
-      if (error || response.statusCode != 200) {
-          resultCallback(error);
+    if (error || response.statusCode != 200) {
+      resultCallback(error);
+    } else {
+      if (transformCallback) {
+        transformCallback(JSON.parse(body).results.bindings, resultCallback);
       } else {
-          if (transformCallback) {
-              transformCallback(JSON.parse(body).results.bindings, resultCallback);
-          } else {
-              resultCallback(null, {
-                statusCode: 200,
-                body: JSON.parse(body).results.bindings,
-                headers: {'content-type': 'application/json'}
-              });
-            }
+        resultCallback(null, {
+          isBase64Encoded: false,
+          statusCode: 200,
+          headers: { 'content-type': 'application/json' },
+          body: JSON.parse(body).results.bindings
+        });
       }
+    }
   });
 }
 
@@ -52,19 +53,20 @@ function GetJSON(url, transformCallback, resultCallback) {
 /* transform the user list json */
 function transformUserList(json, resultCallback) {
   var jsmodified = json.map(function (item) {
-      return {
-          "orcid": item.orcid.value,
-          "name": item.name ? item.name.value : "N/A",
-          "organizations": item.organizations ? item.organizations.value.split(separator) : "N/A",
-          "affiliations": item.affiliations ? item.affiliations.value.split(separator) : "N/A",
-          "gocams": item.cams.value
-      }
+    return {
+      "orcid": item.orcid.value,
+      "name": item.name ? item.name.value : "N/A",
+      "organizations": item.organizations ? item.organizations.value.split(separator) : "N/A",
+      "affiliations": item.affiliations ? item.affiliations.value.split(separator) : "N/A",
+      "gocams": item.cams.value
+    }
   });
 
   resultCallback(null, {
+    isBase64Encoded: false,
     statusCode: 200,
-    body: jsmodified,
-    headers: {'content-type': 'application/json'}
+    headers: { 'content-type': 'application/json' },
+    body: jsmodified
   });
 
 }
